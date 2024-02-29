@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔄 ZFO na PDF 📄</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xslt-processor/1.2.0/xslt-processor.min.js"></script>
+  <style>
+    .progress-bar {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #3b82f6;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex flex-col gap-8">
+  <h2 class="text-4xl font-semibold mb-4 text-center mt-10">ZFO ➡️ PDF</h2>
+  <div class="max-w-xl p-8 bg-white rounded-xl mx-auto border border-gray-200">
+    <div class="gap-4 flex-col">
+      <input type="file" id="fileInput" class="mb-4">
+      <button onclick="transformFile()" class="bg-blue-500 text-white py-2 px-4 rounded-md mr-2">Transform File</button>
+      <div id="progressContainer" class="progress-bar h-4 mb-4 hidden">
+        <div id="progressFill" class="progress-bar-fill"></div>
+      </div>
+      <!-- Download link will be generated for each file, so initially hidden -->
+    </div>
+  </div>
+
+  <script>
+    function transformFile() {
+      const fileInput = document.getElementById('fileInput');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressFill = document.getElementById('progressFill');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a file');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const xmlContent = event.target.result;
+        // Assume transformXml is available in this scope
+        transformData(xmlContent);
+        progressContainer.classList.add('hidden');
+      };
+
+      reader.onprogress = function (event) {
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          progressFill.style.width = `${progress}%`;
+          progressContainer.classList.remove('hidden');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function transformData(xmlContent) {
+      // Place the transformXml function and attachment handling logic here
+
+      const listStylesheet = `<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output omit-xml-declaration="yes"/>
+<xsl:template match="/">
+<xsl:for-each select="//*[local-name()='dmFile']">
+<xsl:value-of select="@dmFileDescr"/>
+<xsl:text>&#xa;</xsl:text>
+</xsl:for-each>
+</xsl:template>
+</xsl:stylesheet>`;
+      const fileNames = transformXml(xmlContent, listStylesheet).trim().split('\n');
+
+      // Process and dump all attachments (adjusted to browser context)
+      fileNames.forEach((file, index) => {
+        // Adjusted XSLT processing for each file
+        const dumpStylesheet = `<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output omit-xml-declaration="yes"/>
+<xsl:template match="/">
+<xsl:value-of select="//*[local-name()='dmFile' and @dmFileDescr='${file}']/*[local-name()='dmEncodedContent']/text()"/>
+</xsl:template>
+</xsl:stylesheet>`;
+
+        const encodedContent = transformXml(xmlContent, dumpStylesheet);
+        const decodedContent = atob(encodedContent); // Base64 decode
+        const blob = new Blob([decodedContent], { type: "application/octet-stream" });
+
+        // Dynamically create download links for each attachment
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file; // Assuming file names are unique and valid for filenames
+        a.textContent = `Download ${file}`;
+        a.className = "bg-green-500 text-white py-2 px-4 rounded-md block mt-2";
+        document.body.appendChild(a);
+      });
+    }
+
+    function transformXml(xmlContent, xsltString) {
+      const parser = new DOMParser();
+      const xsltProcessor = new XSLTProcessor();
+
+      // Parse the XSLT string
+      const xslStylesheet = parser.parseFromString(xsltString, "application/xml");
+      xsltProcessor.importStylesheet(xslStylesheet);
+
+      // Parse the XML content
+      const xmlDoc = parser.parseFromString(xmlContent, "application/xml");
+
+      // Perform the transformation
+      const fragment = xsltProcessor.transformToFragment(xmlDoc, document);
+
+      // Serialize the fragment - assuming you want a string output
+      const serializer = new XMLSerializer();
+      const transformedString = serializer.serializeToString(fragment);
+
+      return transformedString;
+    }
+  </script>
+</body>
+
+</html>
