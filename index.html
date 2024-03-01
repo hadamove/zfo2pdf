@@ -93,7 +93,13 @@
 
         const encodedContent = transformXml(xmlContent, dumpStylesheet);
         const decodedContent = atob(encodedContent); // Base64 decode
-        const blob = new Blob([decodedContent], { type: "application/octet-stream" });
+        const byteArray = new Uint8Array(decodedContent.length);
+        for (let i = 0; i < decodedContent.length; i++) {
+          byteArray[i] = decodedContent.charCodeAt(i);
+        }
+
+        // Create a Blob using the byteArray
+        const blob = new Blob([byteArray], { type: "application/pdf" });
 
         // Dynamically create download links for each attachment
         const url = URL.createObjectURL(blob);
