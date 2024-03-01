@@ -27,24 +27,23 @@
 <body class="bg-gray-50 min-h-screen flex flex-col gap-8">
   <h2 class="text-4xl font-semibold mb-4 text-center mt-10">ZFO ➡️ PDF</h2>
   <div class="max-w-xl p-8 bg-white rounded-xl mx-auto border border-gray-200">
-    <div class="gap-4 flex-col">
+    <div class="flex flex-col gap-4">
       <input type="file" id="fileInput" class="mb-4">
-      <button onclick="transformFile()" class="bg-blue-500 text-white py-2 px-4 rounded-md mr-2">Transform File</button>
-      <div id="progressContainer" class="progress-bar h-4 mb-4 hidden">
-        <div id="progressFill" class="progress-bar-fill"></div>
+      <button id="transformButton" class="bg-blue-500 text-white py-2 px-4 rounded-md">Transform File</button>
+      <div id="progressContainer" class="progress-bar h-4 hidden">
+        <div id="progressFill" class="progress-bar-fill" style="width: 0%;"></div>
       </div>
-      <!-- Download link will be generated for each file, so initially hidden -->
     </div>
   </div>
 
   <script>
-    function transformFile() {
+
+    const transformFile = () => {
       const fileInput = document.getElementById('fileInput');
       const progressContainer = document.getElementById('progressContainer');
       const progressFill = document.getElementById('progressFill');
 
       if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a file');
         return;
       }
 
@@ -54,8 +53,6 @@
       reader.onload = function (event) {
         const zfoContent = event.target.result;
         const xmlContent = extractXmlContentFromZfo(zfoContent);
-
-        // Assume transformXml is available in this scope
         transformData(xmlContent);
         progressContainer.classList.add('hidden');
       };
@@ -71,93 +68,71 @@
       reader.readAsBinaryString(file);
     }
 
-    // Define a function to read and parse the PKCS#7 message
-    function extractXmlContentFromZfo(zfoContent) {
-      // Read the PKCS#7 message from a file
-      // const pkcs7Data = fs.readFileSync(filePath, 'binary');
-
-      // Convert binary data to a forge buffer
+    const extractXmlContentFromZfo = (zfoContent) => {
       const pkcs7Der = forge.util.createBuffer(zfoContent, 'binary');
-
-      // Convert DER to ASN.1 object
       const pkcs7Asn1 = forge.asn1.fromDer(pkcs7Der);
-
-      // Convert ASN.1 object to PKCS#7 object
       const pkcs7 = forge.pkcs7.messageFromAsn1(pkcs7Asn1);
 
-      // Assuming the first part of the content is what we're interested in
-      // and it contains an array of parts that make up the XML content
       let xmlContentParts = pkcs7.rawCapture.content.value[0].value;
       let xmlContent = xmlContentParts.map(part => part.value).join('');
-
       return xmlContent;
     }
 
-    function transformData(xmlContent) {
-      // Place the transformXml function and attachment handling logic here
-
-      const listStylesheet = `<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output omit-xml-declaration="yes"/>
-<xsl:template match="/">
-<xsl:for-each select="//*[local-name()='dmFile']">
-<xsl:value-of select="@dmFileDescr"/>
-<xsl:text>&#xa;</xsl:text>
-</xsl:for-each>
-</xsl:template>
-</xsl:stylesheet>`;
+    const transformData = (xmlContent) => {
+      const listStylesheet = `
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+      <xsl:output omit-xml-declaration="yes"/>
+      <xsl:template match="/">
+        <xsl:for-each select="//*[local-name()='dmFile']">
+          <xsl:value-of select="@dmFileDescr"/>
+          <xsl:text>&#xa;</xsl:text>
+        </xsl:for-each>
+      </xsl:template>
+    </xsl:stylesheet>`;
       const fileNames = transformXml(xmlContent, listStylesheet).trim().split('\n');
 
-      // Process and dump all attachments (adjusted to browser context)
-      fileNames.forEach((file, index) => {
-        // Adjusted XSLT processing for each file
-        const dumpStylesheet = `<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output omit-xml-declaration="yes"/>
-<xsl:template match="/">
-<xsl:value-of select="//*[local-name()='dmFile' and @dmFileDescr='${file}']/*[local-name()='dmEncodedContent']/text()"/>
-</xsl:template>
-</xsl:stylesheet>`;
+      fileNames.forEach((file) => {
+        const dumpStylesheet = `
+      <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+        <xsl:output omit-xml-declaration="yes"/>
+        <xsl:template match="/">
+          <xsl:value-of select="//*[local-name()='dmFile' and @dmFileDescr='${file}']/*[local-name()='dmEncodedContent']/text()"/>
+        </xsl:template>
+      </xsl:stylesheet>`;
 
         const encodedContent = transformXml(xmlContent, dumpStylesheet);
-        const decodedContent = atob(encodedContent); // Base64 decode
+        const decodedContent = atob(encodedContent);
         const byteArray = new Uint8Array(decodedContent.length);
         for (let i = 0; i < decodedContent.length; i++) {
           byteArray[i] = decodedContent.charCodeAt(i);
         }
 
-        // Create a Blob using the byteArray
         const blob = new Blob([byteArray], { type: "application/pdf" });
-
-        // Dynamically create download links for each attachment
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = file; // Assuming file names are unique and valid for filenames
+        a.download = file;
         a.textContent = `Download ${file}`;
         a.className = "bg-green-500 text-white py-2 px-4 rounded-md block mt-2";
         document.body.appendChild(a);
       });
     }
 
-    function transformXml(xmlContent, xsltString) {
+    const transformXml = (xmlContent, xsltString) => {
       const parser = new DOMParser();
       const xsltProcessor = new XSLTProcessor();
 
-      // Parse the XSLT string
       const xslStylesheet = parser.parseFromString(xsltString, "application/xml");
       xsltProcessor.importStylesheet(xslStylesheet);
 
-      // Parse the XML content
       const xmlDoc = parser.parseFromString(xmlContent, "application/xml");
-
-      // Perform the transformation
       const fragment = xsltProcessor.transformToFragment(xmlDoc, document);
 
-      // Serialize the fragment - assuming you want a string output
       const serializer = new XMLSerializer();
-      const transformedString = serializer.serializeToString(fragment);
-
-      return transformedString;
+      return serializer.serializeToString(fragment);
     }
+
+    document.getElementById('transformButton').addEventListener('click', transformFile);
   </script>
 </body>
 
