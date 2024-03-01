@@ -6,7 +6,7 @@ xml="$(openssl smime -inform DER -verify -noverify -in "$1")"
 echo "$xml" > ./idk.xml
 
 # Load the xml from file
-xml=$(<./idk.xml)
+# xml=$(<./idk.xml)
 
 # list all attachments
 stylesheet='
@@ -33,6 +33,8 @@ while read -r file; do
         <xsl:value-of select="'"//*[local-name()='dmFile' and @dmFileDescr='$file']/*[local-name()='dmEncodedContent']/text()"'"/>
       </xsl:template>
     </xsl:stylesheet>'
-  xsltproc <(printf '%s' "$stylesheet") - <<<"$xml" | base64 -d > "$file"
+
+  # echo "$xml" | xsltproc <(echo "$stylesheet") - | base64 -d > "$file"
+  echo "$xml" | xsltproc <(echo "$stylesheet") - | base64 -d > "$file"
 
 done <<<"$file_names"
