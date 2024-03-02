@@ -5,43 +5,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZFO ➡️ PDF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"
     integrity="sha512-95iy0RZIbw3H/FgfAj2wnCQJlzFQ+eaSfUeV/l8WVyGHKSRMzm3M/O+85j9ba/HFphkijrCTDjcuDX0BL2lthA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <style>
-    .progress-bar {
-      width: 100%;
-      background-color: #e0e0e0;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background-color: #3b82f6;
-    }
-  </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen flex flex-col gap-8">
-  <h2 class="text-4xl font-semibold mb-4 text-center mt-10">ZFO ➡️ PDF</h2>
-  <div class="max-w-xl p-8 bg-white rounded-xl mx-auto border border-gray-200">
+<body class="bg-gray-50 min-h-screen flex flex-col gap-6 py-6"
+  style="background-image: radial-gradient(circle, #ddd 1px, transparent 1px), radial-gradient(circle, #ddd 1px, transparent 1px); background-position: 0 0, 5px 5px; background-size: 10px 10px;">
+
+  <h2 class="text-3xl font-semibold mb-4 text-center text-gray-800" style="font-family: 'Poppins', sans-serif;">.ZFO ➡️
+    .PDF</h2>
+
+  <div class="text-center max-w-md mx-auto px-8 bg-white py-8 border border-gray-200" style="border-radius: 8px;">
+    <ol class="text-left mb-6 space-y-4 text-gray-600 list-decimal list-inside">
+      <li><strong>Upload your file:</strong> Click the 'Upload file' button and select the ZFO file you wish to convert.
+      </li>
+      <li><strong>Convert:</strong> After uploading, click the 'Convert' button to start the conversion process.</li>
+      <li><strong>Download:</strong> Once the conversion is complete, you can download your PDF file.</li>
+    </ol>
     <div class="flex flex-col gap-4">
-      <input type="file" id="fileInput" class="mb-4">
-      <button id="transformButton" class="bg-blue-500 text-white py-2 px-4 rounded-md">Transform File</button>
-      <div id="progressContainer" class="progress-bar h-4 hidden">
-        <div id="progressFill" class="progress-bar-fill" style="width: 0%;"></div>
-      </div>
+      <label for="fileInput"
+        class="cursor-pointer py-2 px-4 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4v16c0 1.1.9 2 2 2h12a2 2 0 002-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v4M8 2v4m-4 4h16" />
+        </svg>
+        Upload file
+      </label>
+      <input type="file" id="fileInput" class="sr-only" onchange="updateLabel()">
+      <button id="transformButton" onclick="transformFile()"
+        class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 transition duration-150 ease-in-out flex justify-center items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Convert
+      </button>
     </div>
   </div>
 
+  <footer class="mt-auto py-4 text-center text-sm text-gray-600">
+    © 2024 ZFO to PDF Converter
+  </footer>
   <script>
+    function updateLabel() {
+      const input = document.getElementById('fileInput');
+      const label = document.querySelector('label[for="fileInput"]');
+      const fileName = input.files[0].name;
+      label.textContent = fileName ? `File: ${fileName}` : 'Upload file';
+    }
 
     const transformFile = () => {
       const fileInput = document.getElementById('fileInput');
-      const progressContainer = document.getElementById('progressContainer');
-      const progressFill = document.getElementById('progressFill');
 
       if (!fileInput.files || fileInput.files.length === 0) {
         return;
@@ -54,15 +73,6 @@
         const zfoContent = event.target.result;
         const xmlContent = extractXmlContentFromZfo(zfoContent);
         transformData(xmlContent);
-        progressContainer.classList.add('hidden');
-      };
-
-      reader.onprogress = function (event) {
-        if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100;
-          progressFill.style.width = `${progress}%`;
-          progressContainer.classList.remove('hidden');
-        }
       };
 
       reader.readAsBinaryString(file);
@@ -131,8 +141,6 @@
       const serializer = new XMLSerializer();
       return serializer.serializeToString(fragment);
     }
-
-    document.getElementById('transformButton').addEventListener('click', transformFile);
   </script>
 </body>
 
