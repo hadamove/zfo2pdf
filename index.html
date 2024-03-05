@@ -82,7 +82,7 @@
       reader.onload = function (event) {
         const zfoContent = event.target.result;
         const xmlContent = extractXmlContentFromZfo(zfoContent);
-        transformData(xmlContent);
+        transformToPdfAndAddLinks(xmlContent);
       };
 
       reader.readAsBinaryString(file);
@@ -94,11 +94,22 @@
       const pkcs7 = forge.pkcs7.messageFromAsn1(pkcs7Asn1);
 
       let xmlContentParts = pkcs7.rawCapture.content.value[0].value;
-      let xmlContent = xmlContentParts.map(part => part.value).join('');
+
+      let xmlContent = xmlContentParts.map(part => {
+        let binaryString = part.value;
+        let buffer = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          buffer[i] = binaryString.charCodeAt(i);
+        }
+
+        let textDecoder = new TextDecoder("utf-8");
+        return textDecoder.decode(buffer);
+      }).join('');
+
       return xmlContent;
     }
 
-    const transformData = (xmlContent) => {
+    const transformToPdfAndAddLinks = (xmlContent) => {
       const listStylesheet = `
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
       <xsl:output omit-xml-declaration="yes"/>
