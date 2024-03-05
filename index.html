@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZFO️ na PDF</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"
     integrity="sha512-95iy0RZIbw3H/FgfAj2wnCQJlzFQ+eaSfUeV/l8WVyGHKSRMzm3M/O+85j9ba/HFphkijrCTDjcuDX0BL2lthA=="
@@ -26,34 +25,54 @@
     .fade-in-pop {
       animation: fadeInPop 0.25s ease-out forwards;
     }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: radial-gradient(circle, #ddd 1px, transparent 1px), radial-gradient(circle, #ddd 1px, transparent 1px);
+      background-position: 0 0, 15px 0px;
+      background-size: 15px 15px;
+    }
   </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen flex flex-col gap-6 py-6"
-  style="background-image: radial-gradient(circle, #ddd 1px, transparent 1px), radial-gradient(circle, #ddd 1px, transparent 1px); background-position: 0 0, 15px 0px; background-size: 15px 15px;">
+<body class="min-h-screen bg-gray-50 flex flex-col">
 
-  <h2 class="text-3xl font-semibold mb-4 text-center text-gray-800" style="font-family: 'Poppins', sans-serif;"> .zfo
-    ➜
-    .pdf</h2>
+  <h1 class="text-5xl py-8 text-center">
+    ZFO ▷ PDF
+  </h1>
 
-  <div class="text-center max-w-md mx-auto px-8 bg-white py-8 border border-gray-200" style="border-radius: 8px;">
-    <ol class="text-left mb-6 space-y-4 text-gray-600">
-      <li><strong>Upload your file:</strong> Click the 'Upload file' button and select the ZFO file you wish to convert.
-      </li>
-      <li><strong>Convert:</strong> After uploading, click the 'Convert' button to start the conversion process.</li>
-      <li><strong>Download:</strong> Once the conversion is complete, you can download your PDF file.</li>
-    </ol>
-    <div class="flex flex-col gap-4">
+  <div id="content" class="max-w-xl mx-auto">
+    <div class="flex flex-col gap-4 px-8">
+      <!-- Guide -->
+      <ol class="text-left space-y-4 my-4 list-decimal list-inside">
+        <li><strong>Načti soubor:</strong> klikni na tlačítko "Načti soubor" and vyber soubor datové schránky ze kterého
+          chceš extrahovat přílohy.
+        </li>
+        <li><strong>Konvertuj:</strong> Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení
+          konverze.
+        </li>
+        <li><strong>Ulož:</strong> Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni na
+          odkaz a ulož si přílohu na svůj počítač.
+      </ol>
+
+      <!-- User Input -->
       <label for="fileInput"
-        class="cursor-pointer py-2 px-4 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
-        📤 Nahraj súbor
+        class="cursor-pointer py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
+        📤 Načti soubor
       </label>
-      <input type="file" id="fileInput" class="sr-only" onchange="updateLabel()">
+      <input type="file" id="fileInput" class="sr-only" onchange="onFileInputChanged()">
+
       <button id="transformButton" onclick="transformFile()"
         class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 transition duration-150 ease-in-out flex justify-center items-center">
         ⚡️ Konvertuj
       </button>
-      <div id="downloadLinks"></div>
+
+      <!-- User Output -->
+      <div id="errorContainer" class="text-sm text-red-500 mt-2 hidden"></div>
+      <div id="result" class="hidden">
+        <h2 class="text-2xl mt-4 text-center">📎 Přílohy</h2>
+        <div id="downloadLinks"></div>
+      </div>
     </div>
   </div>
 
@@ -62,17 +81,31 @@
   </footer>
 
   <script>
-    function updateLabel() {
+    function onFileInputChanged() {
       const input = document.getElementById('fileInput');
       const label = document.querySelector('label[for="fileInput"]');
       const fileName = input.files.length ? input.files[0].name : null;
-      label.textContent = fileName ? `📑 ${fileName}` : 'Upload file';
+      label.textContent = fileName ? `📑 ${fileName}` : '📤 Nahraj súbor';
+
+      displayError('');
+    }
+
+    function displayError(message) {
+      const errorContainer = document.getElementById('errorContainer');
+      if (message) {
+        errorContainer.textContent = message;
+        errorContainer.classList.remove('hidden');
+      } else {
+        errorContainer.textContent = '';
+        errorContainer.classList.add('hidden');
+      }
     }
 
     const transformFile = () => {
       const fileInput = document.getElementById('fileInput');
 
       if (!fileInput.files || fileInput.files.length === 0) {
+        displayError('No file selected. Please upload a ZFO file.');
         return;
       }
 
@@ -80,9 +113,17 @@
       const reader = new FileReader();
 
       reader.onload = function (event) {
-        const zfoContent = event.target.result;
-        const xmlContent = extractXmlContentFromZfo(zfoContent);
-        transformToPdfAndAddLinks(xmlContent);
+        try {
+          const zfoContent = event.target.result;
+          const xmlContent = extractXmlContentFromZfo(zfoContent);
+          transformToPdfAndAddLinks(xmlContent);
+        } catch (error) {
+          displayError('An error occurred during the conversion process. Please try again.');
+        }
+      };
+
+      reader.onerror = function (event) {
+        displayError('An error occurred reading the file. Please try again.');
       };
 
       reader.readAsBinaryString(file);
@@ -106,6 +147,10 @@
         return textDecoder.decode(buffer);
       }).join('');
 
+      if (!xmlContent) {
+        throw new Error('No XML content found in the ZFO file.');
+      }
+
       return xmlContent;
     }
 
@@ -127,6 +172,7 @@
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
+      document.getElementById('result').classList.remove('hidden');
 
       fileNames.forEach((file) => {
         const dumpStylesheet = `
@@ -150,7 +196,7 @@
         a.href = url;
         a.download = file;
         a.textContent = `📄 ${file}`;
-        a.className = "block w-full py-2 px-4 bg-indigo-600 text-white text-center rounded-md hover:bg-indigo-700 transition duration-150 ease-in-out mt-4 flex gap-2 fade-in-pop";
+        a.className = "block w-full py-2 px-4 bg-lime-100 rounded-md hover:bg-lime-200 transition duration-150 ease-in-out mt-4 flex gap-2 fade-in-pop";
 
         container.appendChild(a);
       });
