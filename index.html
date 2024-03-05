@@ -28,20 +28,20 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background-image: radial-gradient(circle, #ddd 1px, transparent 1px), radial-gradient(circle, #ddd 1px, transparent 1px);
-      background-position: 0 0, 15px 0px;
-      background-size: 15px 15px;
+      background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+      background-size: 10px 10px;
     }
   </style>
 </head>
 
 <body class="min-h-screen bg-gray-50 flex flex-col">
 
-  <h1 class="text-5xl py-8 text-center">
-    ZFO ▷ PDF
-  </h1>
 
   <div id="content" class="max-w-xl mx-auto">
+    <h1 class="text-5xl py-8 text-center font-thin">
+      ZFO ▷ PDF
+    </h1>
+
     <div class="flex flex-col gap-4 px-8">
       <!-- Guide -->
       <ol class="text-left space-y-4 my-4 list-decimal list-inside">
@@ -86,7 +86,7 @@
       </button>
 
       <!-- User Output -->
-      <div id="errorContainer" class="text-sm text-red-500 mt-2 hidden"></div>
+      <div id="errorContainer" class="text-sm text-red-500 text-center mt-2 hidden"></div>
       <div id="result" class="hidden">
         <h2 class="text-2xl my-4 text-center">📎 Přílohy</h2>
         <div id="downloadLinks"></div>
@@ -123,7 +123,7 @@
       const fileInput = document.getElementById('fileInput');
 
       if (!fileInput.files || fileInput.files.length === 0) {
-        displayError('No file selected. Please upload a ZFO file.');
+        displayError('Nejprve načti soubor, prosím!');
         return;
       }
 
@@ -136,12 +136,12 @@
           const xmlContent = extractXmlContentFromZfo(zfoContent);
           transformToPdfAndAddLinks(xmlContent);
         } catch (error) {
-          displayError('An error occurred during the conversion process. Please try again.');
+          displayError('Nastala chyba při zpracování souboru. Jde o platný soubor ZFO?');
         }
       };
 
       reader.onerror = function (event) {
-        displayError('An error occurred reading the file. Please try again.');
+        displayError('Nastala chyba při čtení souboru. Zkus to prosím znovu.');
       };
 
       reader.readAsBinaryString(file);
