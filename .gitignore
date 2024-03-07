@@ -1,4 +1,2 @@
-*.xml
-*.pdf
-*.zfo
 node_modules/
+public/build/

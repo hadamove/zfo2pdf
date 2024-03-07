@@ -1,5 +1,3 @@
-import forge from 'forge';
-
 function onFileInputChanged() {
     const input = document.getElementById('fileInput');
     const label = document.querySelector('label[for="fileInput"]');
@@ -134,3 +132,6 @@ const transformXml = (xmlContent, xsltString) => {
     const serializer = new XMLSerializer();
     return serializer.serializeToString(fragment);
 }
+
+document.getElementById('fileInput').addEventListener('change', onFileInputChanged);
+document.getElementById('convertButton').addEventListener('click', convertZfoToPdf);

@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeInPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.fade-in-pop {
+    animation: fadeInPop 0.25s ease-out forwards;
+}
+
+body {
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 10px 10px;
+}

@@ -7,12 +7,12 @@ const port = 3000;
 app.use(express.static('public'));
 
 // Route for the root path
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Handle 404 - Keep this as a last route
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   res.status(404).sendFile(path.join(__dirname, 'public', 'not_found.html'));
 });
 
