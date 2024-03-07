@@ -12,10 +12,12 @@ app.get('/', (_req, res) => {
 });
 
 // Handle 404 - Keep this as a last route
-app.use((req, res, _next) => {
+app.use((_req, res, _next) => {
   res.status(404).sendFile(path.join(__dirname, 'public', 'not_found.html'));
 });
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+app.disable('x-powered-by')
