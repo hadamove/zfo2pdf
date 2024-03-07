@@ -12,7 +12,7 @@
     "typescript": "^5.4.2"
   },
   "scripts": {
-    "run": "node main.js"
+    "start": "node main.js"
   },
   "keywords": [],
   "author": "",
