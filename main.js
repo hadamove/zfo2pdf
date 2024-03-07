@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 
 // Handle 404 - Keep this as a last route
 app.use((req, res, next) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+  res.status(404).sendFile(path.join(__dirname, 'public', 'not_found.html'));
 });
 
 app.listen(port, () => {
