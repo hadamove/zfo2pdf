@@ -11,6 +11,10 @@ app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/privacy', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+});
+
 // Handle 404 - Keep this as a last route
 app.use((_req, res, _next) => {
   res.status(404).sendFile(path.join(__dirname, 'public', 'not_found.html'));
