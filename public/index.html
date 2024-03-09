@@ -20,67 +20,73 @@
 
 <body class="min-h-screen bg-gray-50 flex flex-col">
 
-  <div id="content" class="max-w-xl mx-auto">
-    <h1 class="text-5xl py-8 text-center font-thin">
-      ZFO ➡ PDF
-    </h1>
+  <div class="flex flex-row">
+    <div></div>
+    <div id="content" class="max-w-xl mx-auto">
+      <h1 class="text-5xl py-8 text-center font-thin">
+        ZFO ➡ PDF
+      </h1>
 
-    <div class="flex flex-col gap-4 px-8">
-      <!-- Guide -->
-      <ol class="text-left space-y-4 my-4 list-decimal list-inside">
-        <li><strong>Načti soubor:</strong> klikni na tlačítko "Načti soubor" and vyber soubor datové schránky ze kterého
-          chceš extrahovat přílohy.
-        </li>
-        <li><strong>Konvertuj:</strong> Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení
-          konverze.
-        </li>
-        <li><strong>Ulož:</strong> Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni na
-          odkaz a ulož si přílohu na svůj počítač.
-      </ol>
+      <div class="flex flex-col gap-4 px-8">
+        <!-- Guide -->
+        <ol class="text-left space-y-4 my-4 list-decimal list-inside">
+          <li><strong>Načti soubor:</strong> klikni na tlačítko "Načti soubor" and vyber soubor datové schránky ze
+            kterého
+            chceš extrahovat přílohy.
+          </li>
+          <li><strong>Konvertuj:</strong> Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení
+            konverze.
+          </li>
+          <li><strong>Ulož:</strong> Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni
+            na
+            odkaz a ulož si přílohu na svůj počítač.
+        </ol>
 
-      <!-- User safety information -->
-      <details class="group mb-4">
-        <summary class="py-2 px-4 cursor-pointer text-blue-500 bg-blue-100 rounded-lg group-open:rounded-b-none">
-          🔐 Bezpečnostní informace
-        </summary>
-        <div class="p-4 text-gray-600 flex flex-col gap-2 bg-blue-100 rounded-b-lg">
-          <p>
-            <b>Soukromí:</b> Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro
-            ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.
-          </p>
-          <p>
-            <b>Upozornění:</b> Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu,
-            certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.
-          </p>
+        <!-- User safety information -->
+        <details class="group mb-4">
+          <summary class="py-2 px-4 cursor-pointer text-blue-500 bg-blue-100 rounded-lg group-open:rounded-b-none">
+            🔐 Bezpečnostní informace
+          </summary>
+          <div class="p-4 text-gray-600 flex flex-col gap-2 bg-blue-100 rounded-b-lg">
+            <p>
+              <b>Soukromí:</b> Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro
+              ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.
+            </p>
+            <p>
+              <b>Upozornění:</b> Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu,
+              certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.
+            </p>
 
-          <small class="text-center mt-2">
-            Pro více informací o zpracování osobních údajů navštivte
-            <a href="/privacy" class="text-blue-500 hover:text-blue-600 transition duration-150 ease-in-out">Zásady
-              ochrany
-              osobních údajů</a>.
-          </small>
+            <small class="text-center mt-2">
+              Pro více informací o zpracování osobních údajů navštivte
+              <a href="/privacy" class="text-blue-500 hover:text-blue-600 transition duration-150 ease-in-out">Zásady
+                ochrany
+                osobních údajů</a>.
+            </small>
+          </div>
+        </details>
+
+        <!-- User Input -->
+        <label for="fileInput"
+          class="cursor-pointer py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
+          📤 Načti soubor
+        </label>
+        <input id="fileInput" type="file" class="sr-only">
+
+        <button id="convertButton"
+          class="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-900 transition duration-150 ease-in-out flex justify-center items-center">
+          ⚡️ Konvertuj
+        </button>
+
+        <!-- User Output -->
+        <div id="errorContainer" class="text-sm text-red-500 text-center mt-2 hidden"></div>
+        <div id="result" class="hidden">
+          <h2 class="text-3xl mt-8 mb-4 font-thin text-center">PŘÍLOHY</h2>
+          <div id="downloadLinks"></div>
         </div>
-      </details>
-
-      <!-- User Input -->
-      <label for="fileInput"
-        class="cursor-pointer py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
-        📤 Načti soubor
-      </label>
-      <input id="fileInput" type="file" class="sr-only">
-
-      <button id="convertButton"
-        class="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-900 transition duration-150 ease-in-out flex justify-center items-center">
-        ⚡️ Konvertuj
-      </button>
-
-      <!-- User Output -->
-      <div id="errorContainer" class="text-sm text-red-500 text-center mt-2 hidden"></div>
-      <div id="result" class="hidden">
-        <h2 class="text-3xl mt-8 mb-4 font-thin text-center">PŘÍLOHY</h2>
-        <div id="downloadLinks"></div>
       </div>
     </div>
+    <div></div>
   </div>
 
   <footer class="mt-auto py-4 text-center text-sm text-gray-600">
