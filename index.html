@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-3977501855541946">
     <meta name="description" content="Konverze ZFO na PDF: Převeďte své soubory datové schránky ZFO na PDF snadno a bezpečně přímo ve vašem prohlížeči.">
+    <meta name="description-en" content="ZFO to PDF Conversion: Convert your Czech data box ZFO files to PDF easily and securely directly in your browser.">
     <title>ZFO ➡️ PDF konverter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js" integrity="sha512-95iy0RZIbw3H/FgfAj2wnCQJlzFQ+eaSfUeV/l8WVyGHKSRMzm3M/O+85j9ba/HFphkijrCTDjcuDX0BL2lthA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,10 +28,20 @@
       background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
       background-size: 10px 10px;
     }
+    .lang-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
     </style>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
   </head>
   <body class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Language Switcher -->
+    <button id="langSwitch" class="lang-switch bg-white border border-gray-300 px-3 py-1 rounded-lg shadow-sm hover:bg-gray-50 transition duration-150 ease-in-out text-sm font-medium">
+      🇬🇧 EN
+    </button>
     <div class="flex flex-row">
       <div></div>
       <div id="content" class="max-w-xl mx-auto">
@@ -40,48 +51,44 @@
         <div class="flex flex-col gap-4 px-8">
           <!-- Guide -->
           <ol class="text-left space-y-4 my-4 list-decimal list-inside">
-            <li><strong>Načti soubor:</strong>
-              klikni na tlačítko "Načti soubor" and vyber soubor datové schránky ze
-            kterého
-            chceš extrahovat přílohy.</li>
-            <li><strong>Konvertuj:</strong>
-              Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení
-            konverze.</li>
-            <li><strong>Ulož:</strong>
-              Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni</li>
-            na
-            odkaz a ulož si přílohu na svůj počítač.
+            <li><strong data-translate="step1-title">Načti soubor:</strong>
+              <span data-translate="step1-desc">klikni na tlačítko "Načti soubor" a vyber soubor datové schránky ze kterého chceš extrahovat přílohy.</span></li>
+            <li><strong data-translate="step2-title">Konvertuj:</strong>
+              <span data-translate="step2-desc">Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení konverze.</span></li>
+            <li><strong data-translate="step3-title">Ulož:</strong>
+              <span data-translate="step3-desc">Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni na odkaz a ulož si přílohu na svůj počítač.</span></li>
           </ol>
           <!-- User safety information -->
           <details class="group mb-4">
             <summary class="py-2 px-4 cursor-pointer text-blue-500 bg-blue-100 rounded-lg group-open:rounded-b-none">
-              🔐 Bezpečnostní informace
+              🔐
+              <span data-translate="security-title">Bezpečnostní informace</span>
             </summary>
             <div class="p-4 text-gray-600 flex flex-col gap-2 bg-blue-100 rounded-b-lg">
               <p>
-                <b>Soukromí:</b>
-                Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro
-              ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.
+                <b data-translate="privacy-title">Soukromí:</b>
+                <span data-translate="privacy-desc">Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.</span>
               </p>
               <p>
-                <b>Upozornění:</b>
-                Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu,
-              certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.
+                <b data-translate="warning-title">Upozornění:</b>
+                <span data-translate="warning-desc">Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu, certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.</span>
               </p>
             </div>
           </details>
           <!-- User Input -->
           <label for="fileInput" class="cursor-pointer py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150 ease-in-out flex justify-center items-center">
-            📤 Načti soubor
+            📤
+            <span data-translate="load-file-btn">Načti soubor</span>
           </label>
           <input id="fileInput" type="file" class="sr-only">
           <button id="convertButton" class="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-900 transition duration-150 ease-in-out flex justify-center items-center">
-            ⚡️ Konvertuj
+            ⚡️
+            <span data-translate="convert-btn">Konvertuj</span>
           </button>
           <!-- User Output -->
           <div id="errorContainer" class="text-sm text-red-500 text-center mt-2 hidden"></div>
           <div id="result" class="hidden">
-            <h2 class="text-3xl mt-8 mb-4 font-thin text-center">PŘÍLOHY</h2>
+            <h2 class="text-3xl mt-8 mb-4 font-thin text-center" data-translate="attachments-title">PŘÍLOHY</h2>
             <div id="downloadLinks"></div>
           </div>
         </div>
