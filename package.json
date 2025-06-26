@@ -14,8 +14,8 @@
     "typescript": "^5.4.2"
   },
   "scripts": {
-    "build:js": "esbuild --bundle src/index.js --outfile=build/index.js --minify",
-    "build:css": "npx tailwindcss -i ./src/style.css -o ./build/style.css --minify",
+    "build:js": "esbuild --bundle src/index.js --outfile=app.js --minify",
+    "build:css": "npx tailwindcss -i ./src/style.css -o ./style.css --minify",
     "build": "npm run build:js && npm run build:css",
     "deploy": "npm run build",
     "start": "npm run build && node main.js"
