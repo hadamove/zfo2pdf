@@ -1,6 +1,6 @@
-# ZFO ➡️ PDF Converter
+# ZFO to️ PDF Converter
 
-A web-based tool for converting Czech data box files (ZFO format) to PDF attachments. Extract attachments from your ZFO files safely and easily directly in your browser.
+A web-based tool for extracting PDF documents and attachments from Czech government and business communications (.zfo) received through the official data box system (datové schránky).
 
 ## What it does
 
