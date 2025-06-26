@@ -6,10 +6,28 @@
     <meta name="google-adsense-account" content="ca-pub-3977501855541946">
     <meta name="description" content="Konverze ZFO na PDF: Převeďte své soubory datové schránky ZFO na PDF snadno a bezpečně přímo ve vašem prohlížeči.">
     <title>ZFO ➡️ PDF konverter</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3977501855541946" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js" integrity="sha512-95iy0RZIbw3H/FgfAj2wnCQJlzFQ+eaSfUeV/l8WVyGHKSRMzm3M/O+85j9ba/HFphkijrCTDjcuDX0BL2lthA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="./app.js" defer></script>
-    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./index.js" defer></script>
+    <style>
+      @keyframes fadeInPop {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .fade-in-pop {
+      animation: fadeInPop 0.25s ease-out forwards;
+    }
+    body {
+      background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
+    </style>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
   </head>
   <body class="min-h-screen bg-gray-50 flex flex-col">
