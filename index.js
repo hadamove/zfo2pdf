@@ -1,3 +1,121 @@
+// Translations
+const translations = {
+	cs: {
+		"step1-title": "Načti soubor:",
+		"step1-desc":
+			'klikni na tlačítko "Načti soubor" a vyber soubor datové schránky ze kterého chceš extrahovat přílohy.',
+		"step2-title": "Konvertuj:",
+		"step2-desc":
+			'Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení konverze.',
+		"step3-title": "Ulož:",
+		"step3-desc":
+			"Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni na odkaz a ulož si přílohu na svůj počítač.",
+		"security-title": "Bezpečnostní informace",
+		"privacy-title": "Soukromí:",
+		"privacy-desc":
+			"Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.",
+		"warning-title": "Upozornění:",
+		"warning-desc":
+			"Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu, certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.",
+		"load-file-btn": "Načti soubor",
+		"convert-btn": "Konvertuj",
+		"attachments-title": "PŘÍLOHY",
+		"error-no-file": "Nejprve načti soubor, prosím!",
+		"error-processing":
+			"Nastala chyba při zpracování souboru. Jde o platný soubor ZFO?",
+		"error-reading": "Nastala chyba při čtení souboru. Zkus to prosím znovu.",
+		"file-selected": "Soubor vybrán",
+		"lang-button": "🇬🇧 EN",
+		"page-title": "ZFO ➡️ PDF konverter",
+		"page-description":
+			"Konverze ZFO na PDF: Převeďte své soubory datové schránky ZFO na PDF snadno a bezpečně přímo ve vašem prohlížeči.",
+	},
+	en: {
+		"step1-title": "Load file:",
+		"step1-desc":
+			'click the "Load file" button and select the data box file from which you want to extract attachments.',
+		"step2-title": "Convert:",
+		"step2-desc":
+			'After loading the file, click the "Convert" button and wait for the conversion to complete.',
+		"step3-title": "Save:",
+		"step3-desc":
+			"After the conversion is complete, download links for individual attachments will appear. Click the link and save the attachment to your computer.",
+		"security-title": "Security Information",
+		"privacy-title": "Privacy:",
+		"privacy-desc":
+			"Files are not sent to any server, conversion happens in your browser. For verification, you can load the page, disconnect from the internet and the tool will still work.",
+		"warning-title": "Warning:",
+		"warning-desc":
+			"This tool only extracts attachments from the ZFO file and does not verify their integrity, certificate or content. Use this tool only with trusted files.",
+		"load-file-btn": "Load file",
+		"convert-btn": "Convert",
+		"attachments-title": "ATTACHMENTS",
+		"error-no-file": "Please load a file first!",
+		"error-processing":
+			"An error occurred while processing the file. Is it a valid ZFO file?",
+		"error-reading":
+			"An error occurred while reading the file. Please try again.",
+		"file-selected": "File selected",
+		"lang-button": "🇨🇿 CS",
+		"page-title": "ZFO ➡️ PDF converter",
+		"page-description":
+			"ZFO to PDF Conversion: Convert your Czech data box ZFO files to PDF easily and securely directly in your browser.",
+	},
+};
+
+// Current language state
+let currentLang = "cs";
+
+// Language switching functionality
+function switchLanguage() {
+	currentLang = currentLang === "cs" ? "en" : "cs";
+	updatePageLanguage();
+	localStorage.setItem("preferred-language", currentLang);
+}
+
+function updatePageLanguage() {
+	// Update document lang attribute
+	document.documentElement.lang = currentLang;
+
+	// Update page title
+	document.title = translations[currentLang]["page-title"];
+
+	// Update meta description
+	const description = document.querySelector('meta[name="description"]');
+	if (description) {
+		description.content = translations[currentLang]["page-description"];
+	}
+
+	// Update language button
+	const langButton = document.getElementById("langSwitch");
+	langButton.textContent = translations[currentLang]["lang-button"];
+
+	// Update all translatable elements
+	const translatableElements = document.querySelectorAll("[data-translate]");
+	for (const element of translatableElements) {
+		const key = element.getAttribute("data-translate");
+		if (translations[currentLang][key]) {
+			element.textContent = translations[currentLang][key];
+		}
+	}
+
+	// Update file input label if file is selected
+	const fileInput = document.getElementById("fileInput");
+	if (fileInput.files && fileInput.files.length > 0) {
+		onFileInputChanged();
+	}
+}
+
+// Initialize language on page load
+function initializeLanguage() {
+	// Check for saved language preference
+	const savedLang = localStorage.getItem("preferred-language");
+	if (savedLang && translations[savedLang]) {
+		currentLang = savedLang;
+	}
+	updatePageLanguage();
+}
+
 function onFileInputChanged() {
 	const input = document.getElementById("fileInput");
 	const label = document.querySelector('label[for="fileInput"]');
@@ -139,124 +257,6 @@ const transformXml = (xmlContent, xsltString) => {
 	const serializer = new XMLSerializer();
 	return serializer.serializeToString(fragment);
 };
-
-// Translations
-const translations = {
-	cs: {
-		"step1-title": "Načti soubor:",
-		"step1-desc":
-			'klikni na tlačítko "Načti soubor" a vyber soubor datové schránky ze kterého chceš extrahovat přílohy.',
-		"step2-title": "Konvertuj:",
-		"step2-desc":
-			'Po načtení souboru klikni na tlačítko "Konvertuj" a počkej na dokončení konverze.',
-		"step3-title": "Ulož:",
-		"step3-desc":
-			"Po dokončení konverze se ti zobrazí odkazy na stažení jednotlivých příloh. Klikni na odkaz a ulož si přílohu na svůj počítač.",
-		"security-title": "Bezpečnostní informace",
-		"privacy-title": "Soukromí:",
-		"privacy-desc":
-			"Soubory nejsou odesílány na žádný server, konverze probíhá ve vašem prohlížeči. Pro ověření můžete stránku načíst, vypnout internetové připojení a nástroj bude stále fungovat.",
-		"warning-title": "Upozornění:",
-		"warning-desc":
-			"Nástroj pouze extrahuje přílohy ze souboru ZFO a nekontroluje jejich integritu, certifikát nebo obsah. Používejte tento nástroj pouze s důvěryhodnými soubory.",
-		"load-file-btn": "Načti soubor",
-		"convert-btn": "Konvertuj",
-		"attachments-title": "PŘÍLOHY",
-		"error-no-file": "Nejprve načti soubor, prosím!",
-		"error-processing":
-			"Nastala chyba při zpracování souboru. Jde o platný soubor ZFO?",
-		"error-reading": "Nastala chyba při čtení souboru. Zkus to prosím znovu.",
-		"file-selected": "Soubor vybrán",
-		"lang-button": "🇬🇧 EN",
-		"page-title": "ZFO ➡️ PDF konverter",
-		"page-description":
-			"Konverze ZFO na PDF: Převeďte své soubory datové schránky ZFO na PDF snadno a bezpečně přímo ve vašem prohlížeči.",
-	},
-	en: {
-		"step1-title": "Load file:",
-		"step1-desc":
-			'click the "Load file" button and select the data box file from which you want to extract attachments.',
-		"step2-title": "Convert:",
-		"step2-desc":
-			'After loading the file, click the "Convert" button and wait for the conversion to complete.',
-		"step3-title": "Save:",
-		"step3-desc":
-			"After the conversion is complete, download links for individual attachments will appear. Click the link and save the attachment to your computer.",
-		"security-title": "Security Information",
-		"privacy-title": "Privacy:",
-		"privacy-desc":
-			"Files are not sent to any server, conversion happens in your browser. For verification, you can load the page, disconnect from the internet and the tool will still work.",
-		"warning-title": "Warning:",
-		"warning-desc":
-			"This tool only extracts attachments from the ZFO file and does not verify their integrity, certificate or content. Use this tool only with trusted files.",
-		"load-file-btn": "Load file",
-		"convert-btn": "Convert",
-		"attachments-title": "ATTACHMENTS",
-		"error-no-file": "Please load a file first!",
-		"error-processing":
-			"An error occurred while processing the file. Is it a valid ZFO file?",
-		"error-reading":
-			"An error occurred while reading the file. Please try again.",
-		"file-selected": "File selected",
-		"lang-button": "🇨🇿 CS",
-		"page-title": "ZFO ➡️ PDF converter",
-		"page-description":
-			"ZFO to PDF Conversion: Convert your Czech data box ZFO files to PDF easily and securely directly in your browser.",
-	},
-};
-
-// Current language state
-let currentLang = "cs";
-
-// Language switching functionality
-function switchLanguage() {
-	currentLang = currentLang === "cs" ? "en" : "cs";
-	updatePageLanguage();
-	localStorage.setItem("preferred-language", currentLang);
-}
-
-function updatePageLanguage() {
-	// Update document lang attribute
-	document.documentElement.lang = currentLang;
-
-	// Update page title
-	document.title = translations[currentLang]["page-title"];
-
-	// Update meta description
-	const description = document.querySelector('meta[name="description"]');
-	if (description) {
-		description.content = translations[currentLang]["page-description"];
-	}
-
-	// Update language button
-	const langButton = document.getElementById("langSwitch");
-	langButton.textContent = translations[currentLang]["lang-button"];
-
-	// Update all translatable elements
-	const translatableElements = document.querySelectorAll("[data-translate]");
-	for (const element of translatableElements) {
-		const key = element.getAttribute("data-translate");
-		if (translations[currentLang][key]) {
-			element.textContent = translations[currentLang][key];
-		}
-	}
-
-	// Update file input label if file is selected
-	const fileInput = document.getElementById("fileInput");
-	if (fileInput.files && fileInput.files.length > 0) {
-		onFileInputChanged();
-	}
-}
-
-// Initialize language on page load
-function initializeLanguage() {
-	// Check for saved language preference
-	const savedLang = localStorage.getItem("preferred-language");
-	if (savedLang && translations[savedLang]) {
-		currentLang = savedLang;
-	}
-	updatePageLanguage();
-}
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", () => {
