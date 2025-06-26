@@ -11,8 +11,7 @@ A web-based tool for converting Czech data box files (ZFO format) to PDF attachm
 ## Key Features
 
 - **Privacy-focused**: All processing happens in your browser - no files are sent to any server
-- **Secure**: Works offline once loaded - you can disconnect from the internet and it still functions
-- **Simple**: Clean, easy-to-use interface with step-by-step guidance
+- **Offline-first**: Works offline once loaded - you can disconnect from the internet and it still functions
 
 ## Use Cases
 
