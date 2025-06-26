@@ -1,9 +1,8 @@
-# ZFO to️ PDF Converter
+# ZFO ➡️ PDF Converter
 
 A web-based tool for extracting PDF documents and attachments from Czech government and business communications (.zfo) received through the official data box system (datové schránky).
 
-Deployed at [https://hadamove.github.io/zfo2pdf/](https://hadamove.github.io/zfo2pdf/).
-
+Available in **Czech** and **English** at [https://hadamove.github.io/zfo2pdf/](https://hadamove.github.io/zfo2pdf/).
 
 ## What it does
 
@@ -11,10 +10,34 @@ Deployed at [https://hadamove.github.io/zfo2pdf/](https://hadamove.github.io/zfo
 - **Convert**: Extract PDF attachments from the ZFO file  
 - **Save**: Download the extracted attachments to your computer
 
-## Key Features
+## How it Works
 
-- **Privacy-focused**: All processing happens in your browser - no files are sent to any server
-- **Offline-first**: Works offline once loaded - you can disconnect from the internet and it still functions
+ZFO (Zpráva Formulář Odpověď) files from Czech data boxes are essentially **signed XML documents** wrapped in a **PKCS #7 cryptographic envelope**. The extraction process works as follows:
+
+### Zfo File Structure
+```
+ZFO File = PKCS #7 Signed Container
+    └── XML Document (UTF-8)
+        └── <dmFiles> with Base64-encoded attachments
+```
+
+### Extraction Process
+1. **Parse PKCS #7 container** - Remove the cryptographic envelope using Forge.js
+2. **Extract XML content** - Decode the inner XML document containing message data
+3. **Locate attachments** - Find `<dmEncodedContent>` elements within `<dmFile>` tags
+4. **Decode Base64** - Convert Base64 strings back to original PDF binary data
+5. **Generate downloads** - Create blob URLs for browser download
+
+### XML Structure Example
+```xml
+<dmFiles xmlns="http://isds.czechpoint.cz/v20">
+  <dmFile dmFileDescr="invoice.pdf" dmMimeType="application/pdf">
+    <dmEncodedContent>JVBERi0xLjQKJcfsj6IK...</dmEncodedContent>
+  </dmFile>
+</dmFiles>
+```
+
+The tool uses **XSLT transformations** to query the XML and **browser APIs** (File API, Blob API) to handle downloads. All processing happens client-side for maximum privacy.
 
 ## Security Note
 
